@@ -9,6 +9,18 @@ router.get("/", (req, res) => {
 
   let newLogs = [...logs];
 
+  if (order !== undefined) {
+    if (order === "asc") {
+      newLogs.sort((a, b) => a.captainName.localeCompare(b.captainName));
+    } else if (order === "desc") {
+      newLogs.sort((a, b) => b.captainName.localeCompare(a.captainName));
+    } else {
+      return res
+        .status(404)
+        .send({ error: `Query "${order}" is invalid for order` });
+    }
+  }
+
   if (mistakes !== undefined) {
     if (mistakes === "true") {
       newLogs = newLogs.filter((log) => log.mistakesWereMadeToday);
@@ -27,20 +39,8 @@ router.get("/", (req, res) => {
       newLogs = newLogs.filter((log) => log.daysSinceLastCrisis <= days);
     } else {
       return res
-        .status(400)
+        .status(404)
         .send({ error: `Query "${lastCrisis}" is invalid for lastCrisis` });
-    }
-  }
-
-  if (order !== undefined) {
-    if (order === "asc") {
-      newLogs.sort((a, b) => a.captainName.localeCompare(b.captainName));
-    } else if (order === "desc") {
-      newLogs.sort((a, b) => b.captainName.localeCompare(a.captainName));
-    } else {
-      return res
-        .status(400)
-        .send({ error: `Query "${order}" is invalid for order` });
     }
   }
 
