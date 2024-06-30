@@ -4,7 +4,48 @@ const logs = require("../models/logs");
 
 router.get("/NotFound", (req, res) => res.send("Index not found!"));
 
-router.get("/", (req, res) => res.status(200).send(logs));
+router.get("/", (req, res) => {
+  const { order, mistakes, lastCrisis } = req.query;
+
+  let newLogs = [...logs];
+
+  if (mistakes !== undefined) {
+    if (mistakes === "true") {
+      newLogs = newLogs.filter((log) => log.mistakesWereMadeToday === true);
+    } else if (mistakes === "false") {
+      newLogs = newLogs.filter((log) => !log.mistakesWereMadeToday);
+    }
+  }
+
+  if (lastCrisis !== null) {
+    const days = parseInt(lastCrisis.slice(3));
+    if (lastCrisis.startsWith("gth")) {
+      newLogs = newLogs.filter((log) => log.daysSinceLastCrisis > days);
+    } else if (lastCrisis.startsWith("gte")) {
+      newLogs = newLogs.filter((log) => log.daysSinceLastCrisis >= days);
+    } else if (lastCrisis.startsWith("lte")) {
+      newLogs = newLogs.filter((log) => log.daysSinceLastCrisis <= days);
+    } else {
+      return res
+        .status(400)
+        .send({ error: `Query "${lastCrisis}" is invalid for lastCrisis` });
+    }
+  }
+
+  if (order !== undefined) {
+    if (order === "asc") {
+      newLogs.sort((a, b) => a.captainName.localeCompare(b.captainName));
+    } else if (order === "desc") {
+      newLogs.sort((a, b) => b.captainName.localeCompare(a.captainName));
+    } else {
+      return res
+        .status(400)
+        .send({ error: `Query "${order}" is invalid for order` });
+    }
+  }
+
+  res.status(200).send(newLogs);
+});
 
 router.post("/", (req, res) => {
   const currentLog = { ...req.body };
