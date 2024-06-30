@@ -11,13 +11,13 @@ router.get("/", (req, res) => {
 
   if (mistakes !== undefined) {
     if (mistakes === "true") {
-      newLogs = newLogs.filter((log) => log.mistakesWereMadeToday === true);
+      newLogs = newLogs.filter((log) => log.mistakesWereMadeToday);
     } else if (mistakes === "false") {
       newLogs = newLogs.filter((log) => !log.mistakesWereMadeToday);
     }
   }
 
-  if (lastCrisis !== null) {
+  if (lastCrisis !== undefined) {
     const days = parseInt(lastCrisis.slice(3));
     if (lastCrisis.startsWith("gth")) {
       newLogs = newLogs.filter((log) => log.daysSinceLastCrisis > days);
