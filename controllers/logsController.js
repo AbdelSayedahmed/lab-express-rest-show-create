@@ -73,4 +73,12 @@ router.delete("/:indexArray", (req, res) => {
   }
 });
 
+// router.get("/:id", (req, res) => {
+//   const { id } = req.params;
+//   const log = logs.find((input) => input.id === +id);
+//   log
+//     ? res.status(200).send(log)
+//     : res.status(404).json({ error: `log with id: ${id} not found!` });
+// });
+
 module.exports = router;
