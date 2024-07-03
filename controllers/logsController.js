@@ -48,7 +48,7 @@ router.get("/", (req, res) => {
 });
 
 router.post("/", (req, res) => {
-  const currentLog = { ...req.body };
+  const currentLog = { id: logs.length+1, ...req.body };
   logs.push(currentLog);
   res.status(201).send(logs[logs.length - 1]);
 });
