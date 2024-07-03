@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const logs = require("../models/logs.json");
+const nanoid = require("nanoid");
 const fs = require("fs");
 
 router.get("/NotFound", (req, res) => res.send("Index not found!"));
@@ -49,7 +50,7 @@ router.get("/", (req, res) => {
 });
 
 router.post("/", (req, res) => {
-  const currentLog = { id: logs.length + 1, ...req.body };
+  const currentLog = { id: nanoid.nanoid(), ...req.body };
   logs.push(currentLog);
 
   fs.writeFile("./models/logs.json", JSON.stringify(logs), (err) => {
@@ -62,32 +63,40 @@ router.post("/", (req, res) => {
   });
 });
 
-router.get("/:indexArray", (req, res) => {
-  logs[req.params.indexArray]
-    ? res.json(logs[req.params.indexArray])
-    : res.status(404).redirect("/logs/NotFound");
-});
+// router.get("/:indexArray", (req, res) => {
+//   logs[req.params.indexArray]
+//     ? res.json(logs[req.params.indexArray])
+//     : res.status(404).redirect("/logs/NotFound");
+// });
 
-router.delete("/:indexArray", (req, res) => {
-  const { indexArray } = req.params;
-  const logIndex = parseInt(indexArray, 10);
+router.delete("/:id", (req, res) => {
+  const { id } = req.params;
+  const logIndex = logs.findIndex((log) => log.id === id);
 
-  if (logIndex >= 0 && logIndex < logs.length) {
+  if (logIndex !== -1) {
     logs.splice(logIndex, 1);
-    res.status(200).send(`Log with index ${indexArray} has been deleted`);
+    fs.writeFile("./models/logs.json", JSON.stringify(logs), (err) => {
+      if (err) {
+        console.error(err);
+        res.status(500).send("Error saving logs");
+      } else {
+        res.status(200).send(`Log with id ${id} has been deleted`);
+      }
+    });
   } else {
-    res
-      .status(404)
-      .send({ error: `Log with indexArray: ${indexArray} not found!` });
+    res.status(404).send({ error: `Log with id ${id} not found` });
   }
 });
 
-// router.get("/:id", (req, res) => {
-//   const { id } = req.params;
-//   const log = logs.find((input) => input.id === +id);
-//   log
-//     ? res.status(200).send(log)
-//     : res.status(404).json({ error: `log with id: ${id} not found!` });
-// });
+router.get("/:id", (req, res) => {
+  const { id } = req.params;
+  const log = logs.find((log) => log.id === id);
+
+  if (log) {
+    res.status(200).send(log);
+  } else {
+    res.status(404).json({ error: `Log with id ${id} not found` });
+  }
+});
 
 module.exports = router;
