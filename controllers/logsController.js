@@ -63,12 +63,6 @@ router.post("/", (req, res) => {
   });
 });
 
-// router.get("/:indexArray", (req, res) => {
-//   logs[req.params.indexArray]
-//     ? res.json(logs[req.params.indexArray])
-//     : res.status(404).redirect("/logs/NotFound");
-// });
-
 router.delete("/:id", (req, res) => {
   const { id } = req.params;
   const logIndex = logs.findIndex((log) => log.id === id);
