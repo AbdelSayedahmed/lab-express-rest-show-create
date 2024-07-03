@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const logs = require("../models/logs");
+const logs = require("../models/logs.json");
+const fs = require("fs");
 
 router.get("/NotFound", (req, res) => res.send("Index not found!"));
 
@@ -48,9 +49,17 @@ router.get("/", (req, res) => {
 });
 
 router.post("/", (req, res) => {
-  const currentLog = { id: logs.length+1, ...req.body };
+  const currentLog = { id: logs.length + 1, ...req.body };
   logs.push(currentLog);
-  res.status(201).send(logs[logs.length - 1]);
+
+  fs.writeFile("./models/logs.json", JSON.stringify(logs), (err) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send("Error saving logs");
+    } else {
+      res.status(201).send(logs[logs.length - 1]);
+    }
+  });
 });
 
 router.get("/:indexArray", (req, res) => {
