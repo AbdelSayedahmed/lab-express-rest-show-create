@@ -93,4 +93,23 @@ router.get("/:id", (req, res) => {
   }
 });
 
+router.put("/:id", (req, res) => {
+  const { id } = req.params;
+  const logIndex = logs.findIndex((log) => log.id === id);
+  if (logIndex !== -1) {
+    logs[logIndex] = { ...logs[logIndex], ...req.body };
+
+    fs.writeFile("./models/logs.json", JSON.stringify(logs), (err) => {
+      if (err) {
+        console.error(err);
+        res.status(500).send("Error saving logs");
+      } else {
+        res.status(200).send(logs[logIndex]);
+      }
+    });
+  } else {
+    res.status(404).send({ error: `Log with id ${id} not found` });
+  }
+});
+
 module.exports = router;
