@@ -8,6 +8,14 @@
     "daysSinceLastCrisis": 100
   },
   {
+    "id": "2",
+    "captainName": "Ahab",
+    "title": "Whale",
+    "post": "By heavens man, we are turned round and round in this world, like yonder windlass, and fate is the handspike.",
+    "mistakesWereMadeToday": true,
+    "daysSinceLastCrisis": 20
+  },
+  {
     "id": "3",
     "captainName": "Sarah Lance",
     "title": "Vandal Savage",
